@@ -17,4 +17,11 @@ Route::get('/', function () {
 
 Route::get('san-pham/{id}', 'Product@index');
 
+Route::get('san-pham', function () {
+    return view('product.upload');
+});
+Route::post('san-pham',
+    'Product@upload'
+);
+
 Route::get('login', 'Auth.LoginController@login');

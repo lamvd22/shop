@@ -31,4 +31,11 @@ class Product extends Controller
         }
         return view('product.detail', ['product' => $product->toArray(), 'photos' => $photos]);
     }
+
+    public function upload(Request $request)
+    {
+        $path = $request->file('fileToUpload')->store('');
+
+        return asset('storage/' . $path);
+    }
 }
