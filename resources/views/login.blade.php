@@ -78,7 +78,7 @@
             @endif
 
             <div class="content">
-                <h3>Admin Login</h3>
+                <h3>User Login</h3>
                 <form action="login" method="post">
                     <div class="container">
                         {{ csrf_field() }}

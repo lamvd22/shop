@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        // guard for admin authentication
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
 
         'api' => [
             'driver' => 'token',
@@ -68,6 +73,12 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+
+        // users provider for admin authentication
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Admin::class,
         ],
 
         // 'users' => [

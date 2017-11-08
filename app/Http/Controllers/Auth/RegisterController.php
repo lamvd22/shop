@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Admin;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Foundation\Auth\RedirectsUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -20,7 +24,7 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    use RedirectsUsers;
 
     /**
      * Where to redirect users after registration.
@@ -40,9 +44,70 @@ class RegisterController extends Controller
     }
 
     /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        $validator = $this->validator($request->all());
+        $validator->validate();
+
+        if ($validator->fails()) {
+            return redirect('register')
+                ->withErrors($validator, 'registration')
+                ->withInput(
+                    $request->except(
+                        ['password', 'password_confirmation']
+                    )
+                );
+        }
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
+    }
+
+    /**
+     * Get the guard to be used during registration.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+        return Auth::guard();
+    }
+
+    /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  mixed $user
+     * @return mixed
+     */
+    protected function registered(Request $request, $user)
+    {
+        //
+    }
+
+    /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -57,12 +122,12 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param  array $data
      * @return \App\User
      */
     protected function create(array $data)
     {
-        return User::create([
+        return Admin::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),

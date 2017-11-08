@@ -34,7 +34,9 @@ class Product extends Controller
 
     public function upload(Request $request)
     {
-        $path = $request->file('fileToUpload')->store('');
+        /** @var \Illuminate\Http\UploadedFile $file */
+        $file = $request->file('fileToUpload');
+        $path = $file->storeAs('', 'avatar' . '.' . $file->extension());
 
         return asset('storage/' . $path);
     }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Http\Auth\AuthenticatesUsers as Authenticates;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -34,6 +36,17 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('admin')->except('logout');
+    }
+
+    /**
+     * Overwrite trait AuthenticatesUsers->guard
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    public function guard()
+    {
+        return Auth::guard('admin');
     }
 }
